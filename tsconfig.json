@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["es2015", "dom"],
+    "esModuleInterop": true,
+    "target": "ES2018",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    },
+    "include": [
+    "src",
+    "node_modules/@types/puppeteer/index.d.ts"
+    ]
+}
