@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/download": "^8.0.1",
     "@types/tail": "^2.2.1",
     "@types/ws": "^8.2.2",
     "casper": "^0.1.1",
