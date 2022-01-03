@@ -61,30 +61,30 @@ export async function simplefileDownload(type: string, version: string) {
     case "Forge":
       let unSupportet = ["1.17", "1.17.1", "1.18", "1.18.1"];
       if (!unSupportet.includes(version)) {
-      url = "https://files.minecraftforge.net/net/minecraftforge/forge/index_" + version + ".html";
-      await goToPage(url);
-      await page.click('body');
-      const frame = page.frames()[3];
-      await frame.click('button[title="Accept"]');
-      let href = await getHref(await page.$$('a[title="Installer"]'))
-      url = href[0].slice(href[0].lastIndexOf('=') + 1);
-      await download((url as string), downloadPath);
-      console.log("Building Forge...");
-      spawnSync("java", ["-jar", downloadPath + "/forge-*-installer.jar", "--installServer"], { cwd: downloadPath, shell: "/bin/bash", maxBuffer: 1024 * 1024 * 2 });
+        url = "https://files.minecraftforge.net/net/minecraftforge/forge/index_" + version + ".html";
+        await goToPage(url);
+        await page.click('body');
+        const frame = page.frames()[3];
+        await frame.click('button[title="Accept"]');
+        let href = await getHref(await page.$$('a[title="Installer"]'))
+        url = href[0].slice(href[0].lastIndexOf('=') + 1);
+        await download((url as string), downloadPath);
+        console.log("Building Forge...");
+        spawnSync("java", ["-jar", downloadPath + "/forge-*-installer.jar", "--installServer"], { cwd: downloadPath, shell: "/bin/bash", maxBuffer: 1024 * 1024 * 2 });
 
-      const files = readdirSync(downloadPath);
-      files.forEach((file) => {
-        if (file.match(/forge-.*installer\.jar/) && file.match(/forge-.*installer\.jar\.log/)) {
-          unlinkSync(downloadPath + "/" + file);
-        } else if (file.match(/forge-.*\.jar/)) {
-          rename(downloadPath + "/" + file, downloadPath + "/server.jar", () => { });
-        }
-      });
+        const files = readdirSync(downloadPath);
+        files.forEach((file) => {
+          if (file.match(/forge-.*installer\.jar/) && file.match(/forge-.*installer\.jar\.log/)) {
+            unlinkSync(downloadPath + "/" + file);
+          } else if (file.match(/forge-.*\.jar/)) {
+            rename(downloadPath + "/" + file, downloadPath + "/server.jar", () => { });
+          }
+        });
 
       } else {
-       console.log("This Forge version is not supportet yet!");
-       console.log("Unsupportet Forge versions are: " + unSupportet);
-       return 0;
+        console.log("This Forge version is not supportet yet!");
+        console.log("Unsupportet Forge versions are: " + unSupportet);
+        return 0;
       }
       break;
     default:
