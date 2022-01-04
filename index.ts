@@ -4,13 +4,17 @@ import { spawn, spawnSync } from 'child_process';
 import { Tail } from 'tail';
 import { simplefileDownload } from './lib/downloader';
 import { sleep } from './lib/sleep';
+import { changeJavaVersion } from "./lib/changeJavaVersion"
 
 async function main() {
 
+  const type = process.env.MC_TYPE;
+  const version = process.env.MC_VERSION;
+
+  changeJavaVersion(version);
+
   // Prepare if not already happened
   if (!existsSync("./child/server.jar")) {
-    const type = "Forge";
-    const version = "1.17.1";
     const download = await simplefileDownload(type, version);
     if (!download) {
       process.exit();

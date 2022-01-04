@@ -2,23 +2,32 @@ import puppeteer from 'puppeteer';
 import { resolve } from 'path';
 import download from 'download';
 import { spawnSync } from 'child_process';
-import { unlinkSync, rename, writeFileSync, readdirSync } from 'fs';
+import { unlinkSync, rename, writeFileSync, readdirSync, mkdirSync, existsSync } from 'fs';
 
 export async function simplefileDownload(type: string, version: string) {
-  const downloadPath = resolve('./child');
+  const downloadPathStr = "./child";
+  const downloadPath = resolve(downloadPathStr);
 
   const eula = true;
 
   if (eula) {
-    console.log("Downloading Minecrat-Server...");
+    if (!existsSync(downloadPath)) {
+      mkdirSync(downloadPathStr);
+    }
     writeFileSync(downloadPath + "/eula.txt", "eula=true");
+    console.log("Downloading Minecrat-Server...");
   } else {
     console.log("Please accept the EULA!");
     process.exit();
   }
 
   const browser = await puppeteer.launch({
-    headless: true
+    executablePath: process.env.BROWSER_PATH || null,
+    args: [
+      '--no-sandbox',
+      '--headless',
+      '--disable-gpu'
+    ]
   });
 
   const page = await browser.newPage();
