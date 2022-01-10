@@ -6,19 +6,20 @@
   "types": "index.ts",
   "scripts": {
     "start": "ts-node .",
+    "dev": "env BROWSER_PATH=/usr/bin/chromium env MC_VERSION=1.8.9 env MC_TYPE=Vanilla ts-node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/download": "^8.0.1",
-    "@types/puppeteer": "^5.4.4",
+    "@types/puppeteer-core": "^5.4.0",
     "@types/tail": "^2.2.1",
     "@types/ws": "^8.2.2",
     "casper": "^0.1.1",
     "colors": "^1.4.0",
     "download": "^8.0.0",
-    "puppeteer": "^13.0.1",
+    "puppeteer-core": "^13.0.1",
     "tail": "^2.2.4",
     "ws": "^8.4.0"
   },

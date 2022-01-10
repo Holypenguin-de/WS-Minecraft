@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 import { resolve } from 'path';
 import download from 'download';
 import { spawnSync } from 'child_process';
@@ -22,10 +22,10 @@ export async function simplefileDownload(type: string, version: string) {
   }
 
   const browser = await puppeteer.launch({
-    executablePath: process.env.BROWSER_PATH || null,
+    executablePath: process.env.BROWSER_PATH,
+    headless: true,
     args: [
       '--no-sandbox',
-      '--headless',
       '--disable-gpu'
     ]
   });
@@ -46,10 +46,10 @@ export async function simplefileDownload(type: string, version: string) {
   }
 
   // download function
-  async function getHref(elementHandles) {
+  async function getHref(elementHandles: any) {
     const propertyJsHandles = await Promise.all(
-      elementHandles.map(handle => handle.getProperty('href'))
-    );
+      elementHandles.map((handle => handle.getProperty('href'))
+      ));
     const href: object = await Promise.all(
       propertyJsHandles.map(handle => handle.jsonValue())
     );

@@ -1,3 +1,8 @@
 /node_modules
 /child
 /testing
+.git/
+.gitignore
+package-lock.json
+.dockerignore
+Dockerfile
