@@ -19,6 +19,8 @@
     "casper": "^0.1.1",
     "colors": "^1.4.0",
     "download": "^8.0.0",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
     "puppeteer-core": "^13.0.1",
     "tail": "^2.2.4",
     "ws": "^8.4.0"

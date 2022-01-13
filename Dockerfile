@@ -21,6 +21,7 @@ RUN set -x \
     && npm install
 
 EXPOSE 8080
+EXPOSE 8443
 EXPOSE 25565
 
 ENV BROWSER_PATH=/usr/bin/chromium-browser

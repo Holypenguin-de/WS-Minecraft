@@ -1,10 +1,12 @@
 import { WebSocketServer } from 'ws';
-import { readFileSync, appendFile, writeFile, closeSync, openSync, existsSync } from 'fs';
+import { mkdirSync, readFileSync, appendFile, writeFile, closeSync, openSync, existsSync } from 'fs';
 import { spawn, spawnSync } from 'child_process';
 import { Tail } from 'tail';
 import { simplefileDownload } from './lib/downloader';
 import { sleep } from './lib/sleep';
-import { changeJavaVersion } from "./lib/changeJavaVersion"
+import { changeJavaVersion } from "./lib/changeJavaVersion";
+import { createServer as createhttps } from 'https';
+import { createServer as createhttp } from 'http';
 
 async function main() {
 
@@ -27,8 +29,23 @@ async function main() {
   const file = "./child/input.txt";
   closeSync(openSync(file, 'w'));
 
+  // create Server
+  let server: any;
+  let port: number;
+  if (existsSync("./certs/cert.pem") && existsSync('./certs/key.pem')) {
+    server = createhttps({
+      cert: readFileSync("./certs/cert.pem"),
+      key: readFileSync("./certs/key.pem"),
+    });
+    port = 8443;
+  } else {
+    console.log("Server is now using HTTP, if you want to use HTTPS, then add 'cert.pem' and 'key.pem' in the folder '/app/certs' and restart the container!");
+    server = createhttp();
+    port = 8080;
+  }
+
   // create websocket
-  const wss = new WebSocketServer({ port: 8080 });
+  const wss = new WebSocketServer({ server });
   // create logwatcher
   const tail = new Tail(file);
 
@@ -114,7 +131,8 @@ async function main() {
     ws.send(readFileSync(file, { encoding: 'utf8', flag: 'r' }));
   });
 
-  console.log("WebSocket is running on: http://localhost:8080/");
+  server.listen(port);
+  console.log("WebSocket is listening on: http://0.0.0.0:" + port + "/");
 }
 
 main();
