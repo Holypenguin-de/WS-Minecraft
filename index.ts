@@ -7,6 +7,7 @@ import { sleep } from './lib/sleep';
 import { changeJavaVersion } from "./lib/changeJavaVersion";
 import { createServer as createhttps } from 'https';
 import { createServer as createhttp } from 'http';
+import { verify } from 'jsonwebtoken';
 
 async function main() {
 
@@ -42,6 +43,21 @@ async function main() {
     console.log("Server is now using HTTP, if you want to use HTTPS, then add 'cert.pem' and 'key.pem' in the folder '/app/certs' and restart the container!");
     server = createhttp();
     port = 8080;
+  }
+
+  // client authentication
+  if (process.env.JWT) {
+    server.on('upgrade', (request, socket, head) => {
+      const jwttokken = request.headers.jwt;
+      try {
+        verify(jwttokken, process.env.JWT_SECURE_STRING);
+      } catch (e) {
+        console.log("Unauthorized client tried to connect!");
+        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+        socket.end();
+        return;
+      }
+    });
   }
 
   // create websocket
