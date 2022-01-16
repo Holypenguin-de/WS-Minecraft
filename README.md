@@ -3,9 +3,9 @@
 ## Index
 1. [What is this?](#1-what-is-this)
 2. [Features](#2-features) <br>
-  1. [JWT-Client-Authentication](#2-1-jwt-client-authentication)
-  2. [MC-Server-Downloader](#2-2-mc-server-downloader)
-  3. [Buildin-Web-GUI](#2-3-buildin-web-gui)
+  1. [JWT-Client-Authentication](#21-jwt-client-authentication)
+  2. [MC-Server-Downloader](#22-mc-server-downloader)
+  3. [Buildin-Web-GUI](#23-buildin-web-gui)
 3. [Enviroment Variables](#enviroment-variables)
 
 ## 1) What is this?
