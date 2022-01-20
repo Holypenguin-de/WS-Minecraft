@@ -1,19 +1,62 @@
 import { WebSocketServer } from 'ws';
-import { mkdirSync, readFileSync, appendFile, writeFile, closeSync, openSync, existsSync } from 'fs';
+import { readFileSync, appendFile, writeFile, closeSync, openSync, existsSync } from 'fs';
 import { spawn, spawnSync } from 'child_process';
 import { Tail } from 'tail';
 import { simplefileDownload } from './lib/downloader';
 import { sleep } from './lib/sleep';
 import { changeJavaVersion } from "./lib/changeJavaVersion";
+import { website } from "./lib/website";
 import { createServer as createhttps } from 'https';
 import { createServer as createhttp } from 'http';
 import { verify } from 'jsonwebtoken';
 
 async function main() {
 
+  // minecraft vars
   const type = process.env.MC_TYPE;
   const version = process.env.MC_VERSION;
 
+  // check gui
+  const gui = process.env.BUILDIN_WEB_GUI;
+
+  // file vars
+  const file = "./child/input.txt";
+
+  // server vars
+  let server: any;
+  let port: number;
+
+  // create var to check if https is enabled or not
+  let https: boolean;
+
+  // var to check if server get error and / or resolve the problem on its own
+  let error = false;
+
+  // create logwatcher
+  const tail = new Tail(file);
+
+  if (existsSync("./certs/cert.pem") && existsSync('./certs/key.pem')) {
+    https = true;
+
+    // create server with https for websocket
+    server = createhttps({
+      cert: readFileSync("./certs/cert.pem"),
+      key: readFileSync("./certs/key.pem"),
+    });
+    port = 8443;
+  } else {
+    https = false;
+
+    // create server with http for websocket
+    console.log("Server is now using HTTP, if you want to use HTTPS, then add 'cert.pem' and 'key.pem' in the folder '/app/certs' and restart the container!");
+    server = createhttp();
+    port = 8080;
+  }
+
+  // create websocket
+  const wss = new WebSocketServer({ server });
+
+  // changing to the right java-version for the Minecraft Version
   changeJavaVersion(version);
 
   // Prepare if not already happened
@@ -27,27 +70,11 @@ async function main() {
   }
 
   // clear file
-  const file = "./child/input.txt";
   closeSync(openSync(file, 'w'));
-
-  // create Server
-  let server: any;
-  let port: number;
-  if (existsSync("./certs/cert.pem") && existsSync('./certs/key.pem')) {
-    server = createhttps({
-      cert: readFileSync("./certs/cert.pem"),
-      key: readFileSync("./certs/key.pem"),
-    });
-    port = 8443;
-  } else {
-    console.log("Server is now using HTTP, if you want to use HTTPS, then add 'cert.pem' and 'key.pem' in the folder '/app/certs' and restart the container!");
-    server = createhttp();
-    port = 8080;
-  }
 
   // client authentication
   if (process.env.JWT) {
-    server.on('upgrade', (request, socket, head) => {
+    server.on('upgrade', (request: any, socket: any) => {
       const jwttokken = request.headers.jwt;
       try {
         verify(jwttokken, process.env.JWT_SECURE_STRING);
@@ -60,17 +87,15 @@ async function main() {
     });
   }
 
-  // create websocket
-  const wss = new WebSocketServer({ server });
-  // create logwatcher
-  const tail = new Tail(file);
-
-  console.log("Sarting Minecraft-Server...");
+  // starting gui if enabled
+  if (gui) {
+    website();
+  }
 
   // start minecraft server
+  console.log("Sarting Minecraft-Server...");
   const mc_server = spawn('java', ['-jar', 'server.jar', 'nogui'], { cwd: "./child" });
 
-  let error = false;
   tail.on(("line"), function(line) {
     if (line.match(/.*FATAL.*/g) || (line.match(/.*ERROR.*/g) && line.match(/.*JMX.*/g) === null) || line.match(/.*Server Shutdown.*/)) {
       killOnError();
@@ -94,9 +119,6 @@ async function main() {
       }
     }
   }
-
-  // start loglistener
-  tail.watch();
 
   // clear logfile
   writeFile(file, "", (err) => {
@@ -146,9 +168,16 @@ async function main() {
     // send file on first connection
     ws.send(readFileSync(file, { encoding: 'utf8', flag: 'r' }));
   });
+  // start loglistener
+  tail.watch();
 
+  // starte server
   server.listen(port);
-  console.log("WebSocket is listening on: http://0.0.0.0:" + port + "/");
-}
+  if (https) {
+    console.log("WebSocket is listening on: https://0.0.0.0:" + port + "/");
+  } else {
+    console.log("WebSocket is listening on: http://0.0.0.0:" + port + "/");
+  }
 
+}
 main();
