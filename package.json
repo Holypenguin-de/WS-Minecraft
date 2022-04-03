@@ -2,11 +2,11 @@
   "name": "ws-minecraft",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
-  "types": "index.ts",
+  "main": "./build/index.js",
   "scripts": {
-    "start": "ts-node .",
-    "dev": "env JWT=true env JWT_SECURE_STRING=test env BROWSER_PATH=/usr/bin/chromium env MC_VERSION=1.8.9 env MC_TYPE=Vanilla ts-node .",
+    "start": "node ./build/index.js",
+    "dev": "env JWT=true env JWT_SECURE_STRING=test env MC_VERSION=1.8.9 env MC_TYPE=Vanilla ts-node .",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@types/download": "^8.0.1",
     "@types/jsonwebtoken": "^8.5.7",
+    "@types/node-fetch": "^2.6.1",
     "@types/puppeteer-core": "^5.4.0",
     "@types/tail": "^2.2.1",
     "@types/ws": "^8.2.2",

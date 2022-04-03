@@ -1,17 +1,11 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": [
-      "es2021",
-      "dom"
-    ],
     "esModuleInterop": true,
-    "target": "ES2018",
+    "target": "es6",
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "sourceMap": true,
+    "outDir": "build"
   },
-  "include": [
-    "src",
-    "node_modules/@types/puppeteer/index.d.ts"
-  ]
+  "lib": ["es2022"]
 }

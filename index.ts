@@ -6,6 +6,7 @@ import { simplefileDownload } from './lib/downloader';
 import { sleep } from './lib/sleep';
 import { changeJavaVersion } from "./lib/changeJavaVersion";
 import { website } from "./lib/website";
+import {build} from "./lib/builder";
 import { createServer as createhttps } from 'https';
 import { createServer as createhttp } from 'http';
 import { verify } from 'jsonwebtoken';
@@ -20,7 +21,8 @@ async function main() {
   const gui = process.env.BUILDIN_WEB_GUI;
 
   // file vars
-  const file = "./child/input.txt";
+  const dir = "./child"
+  const file = dir + "/input.txt";
 
   // server vars
   let server: any;
@@ -60,13 +62,24 @@ async function main() {
   changeJavaVersion(version);
 
   // Prepare if not already happened
-  if (!existsSync("./child/server.jar")) {
-    const download = await simplefileDownload(type, version);
-    if (!download) {
+  if (!existsSync(dir)) {
+    const download_var = await simplefileDownload(dir, type, version);
+    if (!download_var) {
+      console.log("Something went wrong while downloading!");
       process.exit();
     }
   } else {
     console.log("Server already downloaded")
+  }
+
+  if(!existsSync(dir + "eula.txt") || !existsSync(dir + "server.jar")){
+    const build_var = build(dir, type, version);
+    if (!build_var) {
+      console.log("Something went wrong while downloading!");
+      process.exit();
+    }
+  } else {
+      console.log("Server already prepared!");
   }
 
   // clear file
