@@ -2,7 +2,7 @@
 
 ## Index
 1. [What is this?](#1-what-is-this)
-2. [Features](#2-features) <br>
+2. [Features](#2-features)
    1. [JWT-Client-Authentication](#21-jwt-client-authentication)
    2. [MC-Server-Downloader](#22-mc-server-downloader)
    3. [Buildin-Web-GUI](#23-buildin-web-gui)
